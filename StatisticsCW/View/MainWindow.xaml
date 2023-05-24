@@ -5,11 +5,88 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:StatisticsCW"
         mc:Ignorable="d"
-        Title="Control Work Solver" Height="400" Width="400">
-    <Grid>
-        <TextBlock FontSize="24" FontWeight="Bold"
-                   HorizontalAlignment="Center" VerticalAlignment="Center">
-            Work in Progress
-        </TextBlock>
-    </Grid>
+        WindowStartupLocation="CenterScreen"
+        Title="Control Work Solver" Height="150" Width="300">
+    <DockPanel>
+        <Grid Height="25" DockPanel.Dock="Top">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="30px" />
+                <ColumnDefinition Width="30px" />
+            </Grid.ColumnDefinitions>
+
+            <TextBox x:Name="PdfFilePathBox"
+                     IsReadOnly="True"
+                     VerticalContentAlignment="Center"
+                     Text="D:\Work\DataGrip\DB-KPI"
+                     Grid.Column="0">
+
+            </TextBox>
+            <Button Grid.Column="1">
+                <Image Source="/Resources/Icons/Save.png" />
+            </Button>
+            <Button Grid.Column="2">
+                <Image Source="/Resources/Icons/Close.png" />
+            </Button>
+        </Grid>
+
+        <Grid ShowGridLines="True">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+            <Grid Margin="10"
+                  Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                
+                <TextBlock Text="A = " FontWeight="Bold" FontSize="18"
+                           Margin="5"
+                           VerticalAlignment="Center"/>
+                
+                <TextBox x:Name="ABox"
+                    Grid.Column="1" VerticalContentAlignment="Center"/>
+            </Grid>
+            
+            <Grid Margin="10"
+                  Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                
+                <TextBlock Text="B = " FontWeight="Bold" FontSize="18"
+                           Margin="5"
+                           VerticalAlignment="Center"/>
+                
+                <TextBox x:Name="BBox"
+                         Grid.Column="1" VerticalContentAlignment="Center"/>
+            </Grid>
+
+            <Grid
+                Grid.Row="0" Grid.Column="2" Grid.RowSpan="2">
+
+                <Button Margin="15">
+                    <StackPanel>
+                        <Image Width="32" 
+                            Source="/Resources/Icons/Generate.png" />
+                        
+                        <TextBlock Text="Generate" 
+                                   FontWeight="Bold"/>
+                    </StackPanel>
+                </Button>
+                
+            </Grid>
+
+        </Grid>
+    </DockPanel>
 </Window>
