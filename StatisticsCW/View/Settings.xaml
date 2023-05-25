@@ -1,0 +1,53 @@
+﻿<Window x:Class="StatisticsCW.View.Settings"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:local="clr-namespace:StatisticsCW.View"
+        mc:Ignorable="d"
+        WindowStartupLocation="CenterScreen"
+        Title="Settings" 
+        MinHeight="175" Height="175" 
+        MinWidth="300" Width="300">
+    <Grid ShowGridLines="True">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="1*" />
+            <ColumnDefinition Width="2*" />
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="75" />
+        </Grid.RowDefinitions>
+        
+        <TextBlock Text="App ID:"
+                   FontSize="18" FontWeight="DemiBold"
+                   Grid.Column="0" Grid.Row="0"
+                   VerticalAlignment="Center"
+                   HorizontalAlignment="Center"
+        />
+        
+        <TextBox Grid.Column="1" Grid.Row="0"
+                 Margin="10"></TextBox>
+        
+        
+        <Grid Grid.Row="1" Grid.Column="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            
+            <Button Grid.Column="0" Margin="10">
+                <StackPanel>
+                    <Image Source="/Resources/Icons/Save.png" Width="24"/>
+                    <TextBlock Text="Save" FontWeight="DemiBold" />
+                </StackPanel>
+            </Button>
+            <Button Grid.Column="1" Margin="10">
+                <StackPanel>
+                    <Image Source="/Resources/Icons/Close.png" Width="24"/>
+                    <TextBlock Text="Close" FontWeight="DemiBold" />
+                </StackPanel>
+            </Button>
+        </Grid>
+    </Grid>
+</Window>
