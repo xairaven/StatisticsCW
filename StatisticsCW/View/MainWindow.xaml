@@ -1,4 +1,4 @@
-﻿<Window x:Class="StatisticsCW.MainWindow"
+﻿<Window x:Class="StatisticsCW.View.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -6,11 +6,14 @@
         xmlns:local="clr-namespace:StatisticsCW"
         mc:Ignorable="d"
         WindowStartupLocation="CenterScreen"
-        Title="Control Work Solver" Height="150" Width="300">
+        Title="Control Work Solver" 
+        MinHeight="150" Height="150" 
+        MinWidth="300" Width="300">
     <DockPanel>
         <Grid Height="25" DockPanel.Dock="Top">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="30px" />
                 <ColumnDefinition Width="30px" />
                 <ColumnDefinition Width="30px" />
             </Grid.ColumnDefinitions>
@@ -28,9 +31,13 @@
             <Button Grid.Column="2">
                 <Image Source="/Resources/Icons/Close.png" />
             </Button>
+            <Button Grid.Column="3"
+                    Click="OpenSettings">
+                <Image Source="/Resources/Icons/Settings.png" />
+            </Button>
         </Grid>
 
-        <Grid ShowGridLines="True">
+        <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition Height="*" />
                 <RowDefinition Height="*" />
@@ -75,7 +82,8 @@
             <Grid
                 Grid.Row="0" Grid.Column="2" Grid.RowSpan="2">
 
-                <Button Margin="15">
+                <Button Margin="15"
+                        Click="GeneratePDF">
                     <StackPanel>
                         <Image Width="32" 
                             Source="/Resources/Icons/Generate.png" />
