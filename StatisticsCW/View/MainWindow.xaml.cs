@@ -1,4 +1,7 @@
-﻿using System.Windows;
+﻿using System;
+using System.Windows;
+using StatisticsCW.Data;
+using StatisticsCW.Models;
 
 namespace StatisticsCW.View;
 
@@ -7,8 +10,20 @@ namespace StatisticsCW.View;
 /// </summary>
 public partial class MainWindow : Window
 {
+    private readonly SettingsContext _context = null!;
+    
     public MainWindow()
     {
+        try
+        {
+            _context = new SettingsContext();
+        }
+        catch (Exception e)
+        {
+            MessageBoxCustom.Error(e.Message);
+            Close();
+        }
+        
         InitializeComponent();
     }
 
@@ -19,6 +34,6 @@ public partial class MainWindow : Window
 
     private void OpenSettings(object sender, RoutedEventArgs e)
     {
-        new Settings().Show();
+        new Settings(_context).Show();
     }
 }
