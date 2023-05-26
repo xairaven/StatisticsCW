@@ -31,12 +31,11 @@ public partial class MainWindow : Window
 
     private void SolveTask(object sender, RoutedEventArgs e)
     {
-        (int a, int b) numbers;
         try
         {
-            numbers = ValidateNumbers(AField.Text.Trim(), BField.Text.Trim());
-            var genboxImages = Calculations(numbers.a, numbers.b);
-            GeneratePDF(genboxImages);
+            var numbers = ValidateNumbers(AField.Text.Trim(), BField.Text.Trim());
+            var images = Calculations(numbers.a, numbers.b);
+            GeneratePDF(images);
         }
         catch (Exception exception)
         {
@@ -44,15 +43,9 @@ public partial class MainWindow : Window
         }
     }
 
-    private void GeneratePDF(List<GenboxImage> genboxImages)
+    private void GeneratePDF(List<Bitmap> images)
     {
-        var images = new List<Bitmap>();
-        foreach (var image in genboxImages)
-        {
-            images.Add(BitmapService.ByGenboxImage(image));
-        }
-
-        var document = PDFService.Combine(images, ImageFormat.Gif);
+        var document = PDFService.Combine(images, ImageFormat.Png);
         document.GeneratePdf("output.pdf");
     }
 
@@ -104,27 +97,38 @@ public partial class MainWindow : Window
         return (a, b);
     }
 
-    private List<GenboxImage> Calculations(int a, int b)
+    private List<Bitmap> Calculations(int a, int b)
     {
         var solver = new SolverService(_context.Settings["AppId"]);
-        var genboxImages = new List<GenboxImage>();
+        var images = new List<Bitmap>();
 
-        var query = "Lines Equation: (x-x_0)/(x_1-x_0)=(y-y_0)/(y_1-y_0)";
-        genboxImages.Add(solver.Image(query));
+        var latex = @"\text{Input: } A = " + a + @", B = " + b + @" \\";
+        images.Add(LaTeXService.RenderToPng(latex));
         
-        query = $"Line equation, points ({a},0), (0,a)";
-        genboxImages.Add(solver.Image(query));
-        genboxImages.Add(solver.Image(query, PodId.Result));
-        MessageBox.Show(solver.PlainText(query, PodId.Result));
-        
+        latex = @"\text{Equation of a straight line: } \frac{x-x_0}{x_1-x_0}=\frac{y-y_0}{y_1-y_0}";
+        images.Add(LaTeXService.RenderToPng(latex));
+
+        var query = $"Line equation, points ({a},0), (0,a)";
+        images.Add(BitmapService.ByGenboxImage(solver.Image(query)));
+        images.Add(BitmapService.ByGenboxImage(solver.Image(query, PodId.Result)));
+        var line1 = solver.PlainText(query, PodId.Result);
+
         query = $"Line equation, points (0, a), ({b}, 0)";
-        genboxImages.Add(solver.Image(query));
-        genboxImages.Add(solver.Image(query, PodId.Result));
-        MessageBox.Show(solver.PlainText(query, PodId.Result));
+        images.Add(BitmapService.ByGenboxImage(solver.Image(query)));
+        images.Add(BitmapService.ByGenboxImage(solver.Image(query, PodId.Result)));
+        var line2 = solver.PlainText(query, PodId.Result);
 
-        query = "integrate (f(x)dx) from x=-inf to inf = 1";
-        genboxImages.Add(solver.Image(query));
+        latex = @"f(x) = \left\{\matrix{0, & x \leq  " + $"{a}" + @" \\ " + $"{LaTeXService.ToLaTeXFormat(line1)}" 
+                + @", & " + $"{a}" + @" < x \leq  0 \\ " + $"{LaTeXService.ToLaTeXFormat(line2)}" + @", & 0 < x \leq  " 
+                + $"{b}" + @" \\ 0, & x \geq  " + $"{b}" + @"}\right. \\ \\";
+        images.Add(LaTeXService.RenderToPng(latex));
+
+        latex = @"\text{(Formula) a:}";
+        images.Add(LaTeXService.RenderToPng(latex));
         
-        return genboxImages;
+        query = "integrate (f(x)dx) from x=-inf to inf = 1";
+        images.Add(BitmapService.ByGenboxImage(solver.Image(query)));
+
+        return images;
     }
 }
