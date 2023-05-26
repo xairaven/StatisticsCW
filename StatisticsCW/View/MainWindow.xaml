@@ -6,8 +6,8 @@
         xmlns:local="clr-namespace:StatisticsCW"
         mc:Ignorable="d"
         WindowStartupLocation="CenterScreen"
-        Title="Control Work Solver" 
-        MinHeight="150" Height="150" 
+        Title="Control Work Solver"
+        MinHeight="150" Height="150"
         MinWidth="300" Width="300">
     <DockPanel>
         <Grid Height="25" DockPanel.Dock="Top">
@@ -55,44 +55,50 @@
                     <ColumnDefinition Width="Auto" />
                     <ColumnDefinition Width="*" />
                 </Grid.ColumnDefinitions>
-                
+
                 <TextBlock Text="A = " FontWeight="Bold" FontSize="18"
                            Margin="5"
-                           VerticalAlignment="Center"/>
-                
-                <TextBox x:Name="ABox"
-                    Grid.Column="1" VerticalContentAlignment="Center"/>
+                           VerticalAlignment="Center" />
+
+                <TextBox x:Name="AField"
+                         TextChanged="AField_OnTextChanged"
+                         PreviewTextInput="NumericOnly"
+                         Grid.Column="1" VerticalContentAlignment="Center" />
             </Grid>
-            
+
             <Grid Margin="10"
                   Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto" />
                     <ColumnDefinition Width="*" />
                 </Grid.ColumnDefinitions>
-                
+
                 <TextBlock Text="B = " FontWeight="Bold" FontSize="18"
                            Margin="5"
-                           VerticalAlignment="Center"/>
-                
-                <TextBox x:Name="BBox"
-                         Grid.Column="1" VerticalContentAlignment="Center"/>
+                           VerticalAlignment="Center" />
+
+                <TextBox x:Name="BField"
+                         TextChanged="BField_OnTextChanged"
+                         PreviewTextInput="NumericOnly"
+                         Grid.Column="1" VerticalContentAlignment="Center" />
             </Grid>
 
             <Grid
                 Grid.Row="0" Grid.Column="2" Grid.RowSpan="2">
 
-                <Button Margin="15"
-                        Click="GeneratePDF">
+                <Button x:Name="SolveButton"
+                        IsEnabled="False"
+                        Margin="15"
+                        Click="SolveTask">
                     <StackPanel>
-                        <Image Width="32" 
-                            Source="/Resources/Icons/Generate.png" />
-                        
-                        <TextBlock Text="Generate" 
-                                   FontWeight="Bold"/>
+                        <Image Width="32"
+                               Source="/Resources/Icons/Generate.png" />
+
+                        <TextBlock Text="Solve"
+                                   FontWeight="Bold" />
                     </StackPanel>
                 </Button>
-                
+
             </Grid>
 
         </Grid>
