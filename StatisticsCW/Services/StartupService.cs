@@ -24,9 +24,4 @@ public static class StartupService
 
         return context;
     }
-
-    public static void ConfigureLicenses()
-    {
-        QuestPDF.Settings.License = LicenseType.Community;
-    }
 }
