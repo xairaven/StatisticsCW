@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
-//using Aspose.Words;
 using QuestPDF.Fluent;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
@@ -53,25 +52,4 @@ public static class PDFService
 
         return document;
     }
-
-    /*public static Document Combine(List<Bitmap> images, ImageFormat format)
-    {
-        var document = new Document();
-        var builder = new DocumentBuilder(document);
-
-        foreach (var image in images)
-        {
-            using var stream = new MemoryStream();
-            image.Save(stream, format);
-            
-            var bytes = stream.ToArray();
-
-            builder.InsertImage(bytes);
-            
-            // Insert a paragraph break to avoid overlapping images.
-            builder.Writeln();
-        }
-
-        return document;
-    }*/
 }
