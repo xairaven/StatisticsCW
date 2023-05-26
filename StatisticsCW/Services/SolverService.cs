@@ -1,9 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Windows;
 using Genbox.WolframAlpha;
 using Genbox.WolframAlpha.Objects;
+using StatisticsCW.Enum;
 
 namespace StatisticsCW.Services;
 
@@ -16,17 +18,42 @@ public class SolverService
         _client = new WolframAlphaClient(appId);
     }
 
-    public List<Image> Images(string query)
+    public Image Image(string query, PodId podId = PodId.Input)
     {
-        var results = _client.FullResultAsync(query).Result;
-
-        var images = new List<Image>();
+        var response = _client.FullResultAsync(query).Result;
         
-        foreach (var pod in results.Pods)
+        foreach (var pod in response.Pods)
         {
-            images.AddRange(pod.SubPods.Select(subPod => subPod.Image));
+            if (pod.Id.Equals(podId.ToString()))
+            {
+                return pod.SubPods[0].Image;
+            }
         }
 
-        return images;
+        if (response.Pods.Count == 0) throw new ArgumentException("Wrong Query! 0 answers.");
+        
+        return response.Pods[0].SubPods[0].Image;
+    }
+    
+    public string PlainText(string query, PodId podId = PodId.Input)
+    {
+        var response = _client.FullResultAsync(query).Result;
+        
+        foreach (var pod in response.Pods)
+        {
+            if (pod.Id.Equals(podId.ToString()))
+            {
+                return pod.SubPods[0].Plaintext;
+            }
+        }
+
+        if (response.Pods.Count == 0) throw new ArgumentException("Wrong Query! 0 answers.");
+        
+        return response.Pods[0].SubPods[0].Plaintext;
+    }
+
+    public string ShortAnswer(string query)
+    {
+        return _client.ShortAnswerAsync(query).Result;
     }
 }
