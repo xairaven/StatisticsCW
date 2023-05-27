@@ -62,7 +62,7 @@ public static class PDFService
             PageSizes.A4, PageSizes.A3, PageSizes.A2, PageSizes.A1, PageSizes.A0
         };
 
-        var maxWidth = images.Max(x => x.Width);
+        var maxWidth = images.Max(x => x.Width) + 100;
         
         return sizes.First(size => size.Width > maxWidth);
     }
