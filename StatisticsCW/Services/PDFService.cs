@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
+using System.Linq;
 using QuestPDF.Fluent;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
@@ -12,13 +13,14 @@ public static class PDFService
 {
     public static Document Combine(List<Bitmap> images, ImageFormat format)
     {
-        const string header = "Theory of Probability and Mathematical Statistics.\nControl Work.";
+        const string header = "Theory of Probability and Mathematical Statistics.\nControl Work."; 
+        var pageSize = GetPageSize(images);
         
         var document = Document.Create(container =>
         {
             container.Page(page =>
             {
-                page.Size(PageSizes.A4);
+                page.Size(pageSize);
                 page.PageColor(Colors.White);
                 page.Margin(1, Unit.Centimetre);
                 page.DefaultTextStyle(x => x.FontSize(12));
@@ -51,5 +53,17 @@ public static class PDFService
         });
 
         return document;
+    }
+
+    private static PageSize GetPageSize(List<Bitmap> images)
+    {
+        var sizes = new List<PageSize>
+        {
+            PageSizes.A4, PageSizes.A3, PageSizes.A2, PageSizes.A1, PageSizes.A0
+        };
+
+        var maxWidth = images.Max(x => x.Width);
+        
+        return sizes.First(size => size.Width > maxWidth);
     }
 }
