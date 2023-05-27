@@ -10,6 +10,7 @@ using StatisticsCW.Data;
 using StatisticsCW.Enum;
 using StatisticsCW.Models;
 using StatisticsCW.Services;
+using StatisticsCW.Solve;
 using ImageFormat = System.Drawing.Imaging.ImageFormat;
 using GenboxImage = Genbox.WolframAlpha.Objects.Image;
 
@@ -34,7 +35,11 @@ public partial class MainWindow : Window
         try
         {
             var numbers = ValidateNumbers(AField.Text.Trim(), BField.Text.Trim());
-            var images = Calculations(numbers.a, numbers.b);
+
+            var calculator = new Calculations(_context.Settings["AppId"]);
+            calculator.Solve(numbers.a, numbers.b);
+            var images = calculator.Render();
+            
             GeneratePDF(images);
         }
         catch (Exception exception)
@@ -95,40 +100,5 @@ public partial class MainWindow : Window
             throw new ArgumentException("B have to be lower than 0");
         
         return (a, b);
-    }
-
-    private List<Bitmap> Calculations(int a, int b)
-    {
-        var solver = new SolverService(_context.Settings["AppId"]);
-        var images = new List<Bitmap>();
-
-        var latex = @"\text{Input: } A = " + a + @", B = " + b + @" \\";
-        images.Add(LaTeXService.RenderToPng(latex));
-        
-        latex = @"\text{Equation of a straight line: } \frac{x-x_0}{x_1-x_0}=\frac{y-y_0}{y_1-y_0}";
-        images.Add(LaTeXService.RenderToPng(latex));
-
-        var query = $"Line equation, points ({a},0), (0,a)";
-        images.Add(BitmapService.ByGenboxImage(solver.Image(query)));
-        images.Add(BitmapService.ByGenboxImage(solver.Image(query, PodId.Result)));
-        var line1 = solver.PlainText(query, PodId.Result);
-
-        query = $"Line equation, points (0, a), ({b}, 0)";
-        images.Add(BitmapService.ByGenboxImage(solver.Image(query)));
-        images.Add(BitmapService.ByGenboxImage(solver.Image(query, PodId.Result)));
-        var line2 = solver.PlainText(query, PodId.Result);
-
-        latex = @"f(x) = \left\{\matrix{0, & x \leq  " + $"{a}" + @" \\ " + $"{LaTeXService.ToLaTeXFormat(line1)}" 
-                + @", & " + $"{a}" + @" < x \leq  0 \\ " + $"{LaTeXService.ToLaTeXFormat(line2)}" + @", & 0 < x \leq  " 
-                + $"{b}" + @" \\ 0, & x \geq  " + $"{b}" + @"}\right. \\ \\";
-        images.Add(LaTeXService.RenderToPng(latex));
-
-        latex = @"\text{(Formula) a:}";
-        images.Add(LaTeXService.RenderToPng(latex));
-        
-        query = "integrate (f(x)dx) from x=-inf to inf = 1";
-        images.Add(BitmapService.ByGenboxImage(solver.Image(query)));
-
-        return images;
     }
 }
