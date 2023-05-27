@@ -56,4 +56,11 @@ public class SolverService
     {
         return _client.ShortAnswerAsync(query).Result;
     }
+
+    public string OperandFromResult(string result)
+    {
+        var split = result.Split('=');
+
+        return split[^1].Trim();
+    }
 }
