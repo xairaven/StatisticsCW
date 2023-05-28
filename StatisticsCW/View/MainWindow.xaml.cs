@@ -7,7 +7,6 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using QuestPDF.Fluent;
 using StatisticsCW.Data;
-using StatisticsCW.Enum;
 using StatisticsCW.Models;
 using StatisticsCW.Services;
 using StatisticsCW.Solve;
@@ -46,17 +45,14 @@ public partial class MainWindow : Window
         {
             MessageBoxCustom.Error(exception.Message);
         }
+
+        MessageBoxCustom.Success("Done!");
     }
 
     private void GeneratePDF(List<Bitmap> images)
     {
         var document = PDFService.Combine(images, ImageFormat.Png);
         document.GeneratePdf("output.pdf");
-    }
-
-    private void OpenSettings(object sender, RoutedEventArgs e)
-    {
-        new Settings(_context).Show();
     }
 
     private void NumericOnly(object sender, TextCompositionEventArgs e)
@@ -100,5 +96,15 @@ public partial class MainWindow : Window
             throw new ArgumentException("B have to be lower than 0");
         
         return (a, b);
+    }
+    
+    private void OpenSettings(object sender, RoutedEventArgs e)
+    {
+        new Settings(_context).Show();
+    }
+    
+    private void Info(object sender, RoutedEventArgs e)
+    {
+        new AboutWindow().Show();
     }
 }

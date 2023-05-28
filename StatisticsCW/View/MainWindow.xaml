@@ -10,33 +10,14 @@
         MinHeight="150" Height="150"
         MinWidth="300" Width="300">
     <DockPanel>
-        <Grid Height="25" DockPanel.Dock="Top">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="30px" />
-                <ColumnDefinition Width="30px" />
-                <ColumnDefinition Width="30px" />
-            </Grid.ColumnDefinitions>
-
-            <TextBox x:Name="PdfFilePathBox"
-                     IsReadOnly="True"
-                     VerticalContentAlignment="Center"
-                     Text="D:\Work\DataGrip\DB-KPI"
-                     Grid.Column="0">
-
-            </TextBox>
-            <Button Grid.Column="1">
-                <Image Source="/Resources/Icons/Save.png" />
-            </Button>
-            <Button Grid.Column="2">
-                <Image Source="/Resources/Icons/Close.png" />
-            </Button>
-            <Button Grid.Column="3"
-                    Click="OpenSettings">
-                <Image Source="/Resources/Icons/Settings.png" />
-            </Button>
-        </Grid>
-
+        <Menu DockPanel.Dock="Top">
+            <MenuItem Header="Settings ▾" Click="OpenSettings"/>
+            <Separator Style="{StaticResource VerticalSeparator}" />
+            <MenuItem Header="About ▾" Click="Info"/>
+        </Menu>
+        
+        <Separator Style="{StaticResource InterfaceSeparator}"/>
+        
         <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition Height="*" />
@@ -48,7 +29,7 @@
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
-
+            
             <Grid Margin="10"
                   Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2">
                 <Grid.ColumnDefinitions>
