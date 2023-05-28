@@ -1,0 +1,24 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Style TargetType="Menu">
+        <Setter Property="Background" Value="White" />
+    </Style>
+    
+    <Style x:Key="TransparentButton">
+        <Setter Property="Button.Background" Value="Transparent" />
+        <Setter Property="Button.BorderBrush" Value="Transparent" />
+    </Style>
+    
+    <Style x:Key="InterfaceSeparator">
+        <Setter Property="DockPanel.Dock" Value="Top" /> 
+        <Setter Property="Separator.BorderBrush" Value="DarkGray" />
+        <Setter Property="Separator.BorderThickness" Value="0.5" />
+    </Style>
+    
+    <Style x:Key="VerticalSeparator">
+        <Setter Property="Rectangle.VerticalAlignment" Value="Stretch" />
+        <Setter Property="Rectangle.Width" Value="1" />
+        <Setter Property="Rectangle.Margin" Value="0" />
+        <Setter Property="Rectangle.Stroke" Value="DarkGray" />
+    </Style>
+</ResourceDictionary>
