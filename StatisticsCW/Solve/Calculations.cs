@@ -12,74 +12,78 @@ internal class Calculations
 
     private int _a;
     private int _b;
-
-    private string[] _lines;
-    private List<string> _integralsResults;
-
-    private string _density;
+    
+    private readonly Dictionary<string, string> _results;
     
     public Calculations(string appId)
     {
         _solver = new SolverService(appId);
 
         // Initializing fields
-        _lines = new string[4];
-        _integralsResults = new List<string>();
-
-        _density = string.Empty;
+        _results = new Dictionary<string, string>();
     }
     
     public void Solve(int a, int b)
     {
         _a = a;
         _b = b;
+
+        _results.Add("Line1", "0");
         
         // Line 2 result
         var query = $"Line equation, points ({_a},0), (0,a)";
-        var line2 = _solver.PlainText(query, PodId.Result);
-
+        var result = _solver.OperandFromResult(_solver.PlainText(query, PodId.Result));
+        _results.Add("Line2", result);
+        
         // Line 3 result
         query = $"Line equation, points (0, a), ({_b}, 0)";
-        var line3 = _solver.PlainText(query, PodId.Result);
+        result = _solver.OperandFromResult(_solver.PlainText(query, PodId.Result));
+        _results.Add("Line3", result);
 
-        // Lines to array
-        _lines = new[] { "0", _solver.OperandFromResult(line2), _solver.OperandFromResult(line3), "0"};
+        _results.Add("Line4", "0");
         
         // FINDING A
         
         // First integral
-        query = $"Integrate({_lines[0]}) from x=-inf to x={_a}";
-        _integralsResults.Add(_solver.OperandFromResult(_solver.PlainText(query, PodId.Result)));
+        query = $"Integrate({_results["Line1"]}) from x=-inf to x={_a}";
+        result = _solver.OperandFromResult(_solver.PlainText(query, PodId.Result));
+        _results.Add("A1Integral", result);
         
         // Second integral
-        query = $"Integrate({_lines[1]}) from x={_a} to x=0";
-        _integralsResults.Add(_solver.OperandFromResult(_solver.PlainText(query, PodId.Result)));
+        query = $"Integrate({_results["Line2"]}) from x={_a} to x=0";
+        result = _solver.OperandFromResult(_solver.PlainText(query, PodId.Result));
+        _results.Add("A2Integral", result);
         
         // Third integral
-        query = $"Integrate({_lines[2]}) from x=0 to x={_b}";
-        _integralsResults.Add(_solver.OperandFromResult(_solver.PlainText(query, PodId.Result)));
+        query = $"Integrate({_results["Line3"]}) from x=0 to x={_b}";
+        result = _solver.OperandFromResult(_solver.PlainText(query, PodId.Result));
+        _results.Add("A3Integral", result);
         
         // Fourth integral
-        query = $"Integrate({_lines[3]}) from x={_b} to x=inf";
-        _integralsResults.Add(_solver.OperandFromResult(_solver.PlainText(query, PodId.Result)));
+        query = $"Integrate({_results["Line4"]}) from x={_b} to x=inf";
+        result = _solver.OperandFromResult(_solver.PlainText(query, PodId.Result));
+        _results.Add("A4Integral", result);
         
         // Sum
-        query = $"{_integralsResults[0]} + {_integralsResults[1]} + {_integralsResults[2]} + {_integralsResults[3]}";
-        _integralsResults.Add(_solver.OperandFromResult(_solver.PlainText(query, PodId.Result)));
+        query = $"{_results["A1Integral"]} + {_results["A2Integral"]} " +
+                $"+ {_results["A3Integral"]} + {_results["A4Integral"]}";
+        result = _solver.OperandFromResult(_solver.PlainText(query, PodId.Result));
+        _results.Add("ASum", result);
 
         // A
-        query = $"Solve {_integralsResults[4]} = 1"; 
-        _density = _solver.OperandFromResult(_solver.PlainText(query, PodId.Result));
+        query = $"Solve {_results["ASum"]} = 1"; 
+        result = _solver.OperandFromResult(_solver.PlainText(query, PodId.Result));
+        _results.Add("A", result);
     }
 
     public List<Bitmap> Render()
     {
         var images = new List<Bitmap>();
 
-        // Line equations in Latex format
-        var lines = _lines.Select(LaTeXService.ToLaTeXFormat).ToArray();
-        var integralsResults = _integralsResults.Select(LaTeXService.ToLaTeXFormat).ToArray();
-        
+        // All equations in Latex format
+        var results 
+            = _results.Keys.ToDictionary(key => key, key => LaTeXService.ToLaTeXFormat(_results[key]));
+
         string latex;
         string query;
         string text;
@@ -104,10 +108,10 @@ internal class Calculations
         
         // f(x) system (lines)
         latex = @"f(x) = \left\{\matrix{" 
-                + lines[0] +  @", & x \leq  " + _a + @" \\ " 
-                + lines[1] + @", & " + _a + @" < x \leq  0 \\ " 
-                + lines[2] + @", & 0 < x \leq  " + _b + @" \\ " 
-                + lines[3] + @", & x \geq  " + _b 
+                + results["Line1"] +  @", & x \leq  " + _a + @" \\ " 
+                + results["Line2"] + @", & " + _a + @" < x \leq  0 \\ " 
+                + results["Line3"] + @", & 0 < x \leq  " + _b + @" \\ " 
+                + results["Line4"] + @", & x \geq  " + _b 
                 + @"}\right.";
         images.Add(LaTeXService.RenderToPng(latex));
 
@@ -124,9 +128,9 @@ internal class Calculations
         images.Add(LaTeXService.RenderToPng(latex));
         
         // Formula A extended
-        latex = @"\star \int_{-\infty}^{" + _a + @"}" + lines[0] + @"dx + \int_{" + _a +
-                @"}^{0}(" + lines[1] + @")dx + \int_{0}^{" + _b + @"}(" + lines[2] + @")dx + \int_{" + _b +
-                @"}^{\infty}" + lines[3] + @"dx = ... = 1? ";
+        latex = @"\star \int_{-\infty}^{" + _a + @"}" + results["Line1"] + @"dx + \int_{" + _a +
+                @"}^{0}(" + results["Line2"] + @")dx + \int_{0}^{" + _b + @"}(" + results["Line3"] + @")dx + \int_{" + _b +
+                @"}^{\infty}" + results["Line4"] + @"dx = ... = 1? ";
         images.Add(LaTeXService.RenderToPng(latex));
         
         // Integrals Title
@@ -134,19 +138,19 @@ internal class Calculations
         images.Add(LaTeXService.RenderToPng(latex));
 
         // First integral
-        latex = @"\bullet \int_{-\infty}^{" + _a + @"}" + lines[0] + @"dx = " + $"{integralsResults[0]}";
+        latex = @"\bullet \int_{-\infty}^{" + _a + @"}" + results["Line1"] + @"dx = " + $"{results["A1Integral"]}";
         images.Add(LaTeXService.RenderToPng(latex));
 
         // Second integral
-        latex = @"\bullet \int_{" + _a + @"}^{0}(" + lines[1] + @")dx = " + $"{integralsResults[1]}";
+        latex = @"\bullet \int_{" + _a + @"}^{0}(" + results["Line2"] + @")dx = " + $"{results["A2Integral"]}";
         images.Add(LaTeXService.RenderToPng(latex));
         
         // Third integral
-        latex = @"\bullet \int_{0}^{" + _b + @"}(" + lines[2] + @")dx = " + $"{integralsResults[2]}";
+        latex = @"\bullet \int_{0}^{" + _b + @"}(" + results["Line3"] + @")dx = " + $"{results["A3Integral"]}";
         images.Add(LaTeXService.RenderToPng(latex));
         
         // Fourth integral
-        latex = @"\bullet \int_{" + _b + @"}^{\infty}" + lines[3] + @"dx = " + $"{integralsResults[3]}";
+        latex = @"\bullet \int_{" + _b + @"}^{\infty}" + results["Line4"] + @"dx = " + $"{results["A4Integral"]}";
         images.Add(LaTeXService.RenderToPng(latex));
         
         // Sum Title
@@ -154,12 +158,12 @@ internal class Calculations
         images.Add(LaTeXService.RenderToPng(latex));
 
         // Sum
-        latex = $"{integralsResults[0]} + {integralsResults[1]} + {integralsResults[2]} + {integralsResults[3]}" +
-                $" = {integralsResults[4]} " + @"\Rightarrow " + integralsResults[4] + " = 1";
+        latex = $"{results["A1Integral"]} + {results["A2Integral"]} + {results["A3Integral"]} + {results["A4Integral"]}" +
+                $" = {results["ASum"]} " + @"\Rightarrow " + results["ASum"] + " = 1";
         images.Add(LaTeXService.RenderToPng(latex));
         
         // A
-        latex = $"a = {LaTeXService.ToLaTeXFormat(_density)}";
+        latex = $"a = {LaTeXService.ToLaTeXFormat(results["A"])}";
         images.Add(LaTeXService.RenderToPng(latex));
         
         // A TITLE
