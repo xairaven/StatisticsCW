@@ -21,24 +21,13 @@
     </ItemGroup>
 
     <ItemGroup>
-      <None Remove="Resources\App\icon.ico" />
       <Resource Include="Resources\App\icon.ico">
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </Resource>
-      <None Remove="Resources\Icons\Close.png" />
-      <Resource Include="Resources\Icons\Close.png">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </Resource>
-      <None Remove="Resources\Icons\Save.png" />
-      <Resource Include="Resources\Icons\Save.png">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </Resource>
-      <None Remove="Resources\Icons\Generate.png" />
       <Resource Include="Resources\Icons\Generate.png">
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </Resource>
-      <None Remove="Resources\Icons\Settings.png" />
-      <Resource Include="Resources\Icons\Settings.png">
+      <Resource Include="Resources\Pictures\KPISmallLogo.png">
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </Resource>
     </ItemGroup>
