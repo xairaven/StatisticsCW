@@ -11,4 +11,12 @@ public static class MessageBoxCustom
             button: MessageBoxButton.OK,
             icon: MessageBoxImage.Error);
     }
+
+    public static void Success(string message)
+    {
+        MessageBox.Show(messageBoxText: message,
+            caption: "Success!",
+            MessageBoxButton.OK,
+            icon: MessageBoxImage.Information);
+    }
 }
