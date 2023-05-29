@@ -70,7 +70,7 @@
                 <Button x:Name="SolveButton"
                         IsEnabled="False"
                         Margin="15"
-                        Click="SolveTask">
+                        Click="Solve_OnClick">
                     <StackPanel>
                         <Image Width="32"
                                Source="/Resources/Icons/Generate.png" />

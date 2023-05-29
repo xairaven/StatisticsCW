@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -29,30 +31,67 @@ public partial class MainWindow : Window
         InitializeComponent();
     }
 
-    private void SolveTask(object sender, RoutedEventArgs e)
+    private void Solve_OnClick(object sender, RoutedEventArgs e)
     {
+        var loadingWindow = new LoadingWindow();
+        
+        var a = AField.Text.Trim();
+        var b = BField.Text.Trim();
+        
+        loadingWindow.Show();
+        Task.Run(() => Solve(loadingWindow, a, b));
+    }
+
+    private void Solve(LoadingWindow loadingWindow, string a, string b)
+    {
+        var logger = new LoggingService(loadingWindow);
+        
+        var stopWatch = new Stopwatch();
+        stopWatch.Start();
+
         try
         {
-            var numbers = ValidateNumbers(AField.Text.Trim(), BField.Text.Trim());
+            logger.LogStatus(0, "Loading...", stopWatch.Elapsed);
 
+            logger.LogStatus(5, "Parsing numbers...", stopWatch.Elapsed);
+
+            var numbers = ValidateNumbers(a, b);
             var calculator = new Calculations(_context.Settings["AppId"]);
+            
+            logger.LogStatus(10, "Solving task...", stopWatch.Elapsed);
+
             calculator.Solve(numbers.a, numbers.b);
+            
+            logger.LogStatus(50, "Rendering pictures...", stopWatch.Elapsed);
+
             var images = calculator.Render();
             
-            GeneratePDF(images);
+            logger.LogStatus(80, "Generating PDF...", stopWatch.Elapsed);
+
+            var bytes = GeneratePDF(images);
+
+            Dispatcher.Invoke(() =>
+            {
+                loadingWindow.SaveButton.IsEnabled = true;
+                loadingWindow.CloseButton.IsEnabled = true;
+                loadingWindow.GetPDF(bytes);
+            });
+
+            stopWatch.Stop();
+            
+            logger.LogStatus(100, "Done!", stopWatch.Elapsed);
+            MessageBoxCustom.Sound();
         }
         catch (Exception exception)
         {
             MessageBoxCustom.Error(exception.Message);
         }
-
-        MessageBoxCustom.Success("Done!");
     }
 
-    private void GeneratePDF(List<Bitmap> images)
+    private byte[] GeneratePDF(List<Bitmap> images)
     {
         var document = PDFService.Combine(images, ImageFormat.Png);
-        document.GeneratePdf("output.pdf");
+        return document.GeneratePdf();
     }
 
     private void NumericOnly(object sender, TextCompositionEventArgs e)
@@ -93,7 +132,7 @@ public partial class MainWindow : Window
             throw new ArgumentException("A have to be lower than 0");
         
         if (b <= 0)
-            throw new ArgumentException("B have to be lower than 0");
+            throw new ArgumentException("B have to be greater than 0");
         
         return (a, b);
     }
