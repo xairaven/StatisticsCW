@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using System.Media;
+using System.Windows;
 
 namespace StatisticsCW.Models;
 
@@ -18,5 +19,11 @@ public static class MessageBoxCustom
             caption: "Success!",
             MessageBoxButton.OK,
             icon: MessageBoxImage.Information);
+    }
+
+    public static void Sound()
+    {
+        var simpleSound = new SoundPlayer(@"c:\Windows\Media\Windows Background.wav");
+        simpleSound.Play();
     }
 }
