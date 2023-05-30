@@ -29,6 +29,7 @@ namespace StatisticsCW
             DispatcherUnhandledException += (s, e) =>
             {
                 MessageBoxCustom.Error(e.Exception.Message);
+                MessageBoxCustom.Error(e.Exception.StackTrace!);
                 e.Handled = true;
             };
         }
