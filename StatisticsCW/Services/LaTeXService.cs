@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
+using System.Linq;
 using WpfMath;
 using WpfMath.Parsers;
 
@@ -31,29 +32,70 @@ public static class LaTeXService
 
     private static string Division(string str)
     {
-        var separators = new[] { '+', '-', '*', '=' };
+        var indexes = Enumerable.Range(0, str.Length).Where(i => str[i] == '/').ToList();
         
-        var splitByOperators = str.Split(separators);
+        if (indexes.Count == 0) return str;
 
-        var toReplace = new Dictionary<string, string>();
+        string result = str;
         
-        foreach (var operand in splitByOperators)
+        for (int i = indexes.Count - 1; i >= 0; i--)
         {
-            if (!operand.Contains('/')) continue;
-            var split = operand.Split("/");
+            int j, k;
+            int bracketCounter = 0;
             
+            // Left
+            for (j = indexes[i] - 1; j >= 0; j--)
+            {
+                if (str[j].Equals(' ') && bracketCounter == 0)
+                {
+                    j++;
+                    break;
+                }
+
+                if (str[j].Equals('(') && bracketCounter == 1)
+                {
+                    break;
+                }
+
+                if (str[j].Equals('(')) bracketCounter--;
+
+                if (str[j].Equals(')')) bracketCounter++;
+
+                if (j == 0) break;
+            }
+
+            bracketCounter = 0;
+            for (k = indexes[i] + 1; k < str.Length; k++)
+            {
+                if (str[k].Equals(' ') && bracketCounter == 0)
+                {
+                    k--;
+                    break;
+                }
+
+                if (str[k].Equals(')') && bracketCounter == 1)
+                {
+                    break;
+                }
+
+                if (str[k].Equals(')')) bracketCounter--;
+                
+                if (str[k].Equals('(')) bracketCounter++;
+                
+                if (k == str.Length - 1) break;
+            }
+
+            var sub = str.Substring(j, k + 1 - j);
+            
+            var split = sub.Split("/");
+
             split[0] = split[0].Replace('(', ' ').Replace(')', ' ').Trim();
             split[1] = split[1].Replace('(', ' ').Replace(')', ' ').Trim();
 
             var resultOperand = @"\frac{" + split[0] + @"}{" + split[1] + @"}";
-                
-            toReplace.Add(operand.Trim(), resultOperand);
-        }
 
-        var result = str;
-        foreach (var key in toReplace.Keys)
-        {
-            result = result.Replace(key, toReplace[key]);
+            result = result.Remove(j, sub.Trim().Length).Insert(j, resultOperand.Trim());
+            //result = result.Replace(sub.Trim(), resultOperand.Trim());
         }
         
         return result;
