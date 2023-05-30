@@ -602,7 +602,7 @@ internal class Calculations
         images.Add(LaTeXService.RenderToPng(latex));
 
         // Formula D(x)
-        latex = @"D(x) = M(x^2)+[M(x)]^2 = d + m^2 = ... ";
+        latex = @"D(x) = M(x^2)-[M(x)]^2 = d - m^2 = ... ";
         images.Add(LaTeXService.RenderToPng(latex));
         
         // M(x^2) title
