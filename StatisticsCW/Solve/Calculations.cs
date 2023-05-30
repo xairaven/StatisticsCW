@@ -272,12 +272,12 @@ internal class Calculations
         _results["Mx2Sum"] = result;
         
         // M(x)^2 Sum
-        query = $"{_results["MxSum"]})^2";
+        query = $"({_results["MxSum"]})^2";
         result = _solver.OperandFromResult(_solver.PlainText(query, PodId.Result));
         _results["m2Sum"] = result;
         
         // D(x) Sum
-        query = $"{_results["Mx2Sum"]} + {_results["m2Sum"]}";
+        query = $"{_results["Mx2Sum"]} - {_results["m2Sum"]}";
         result = _solver.OperandFromResult(_solver.PlainText(query, PodId.Result));
         _results["Dx"] = result;
         
@@ -654,7 +654,7 @@ internal class Calculations
         images.Add(LaTeXService.RenderToPng(latex));
         
         // Formula D(x)
-        latex = @"D(x) = M(x^2)+[M(x)]^2 = d + m^2 = " + $"{results["m2Sum"]} + {results["Mx2Sum"]} = {results["Dx"]}";
+        latex = @"D(x) = M(x^2)-[M(x)]^2 = d - m^2 = " + $"{results["Mx2Sum"]} -{results["m2Sum"]} = {results["Dx"]}";
         images.Add(LaTeXService.RenderToPng(latex));
         
         // D(x)
