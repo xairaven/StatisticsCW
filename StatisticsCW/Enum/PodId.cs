@@ -6,6 +6,7 @@ public enum PodId
 {
     Input,
     Result,
+    DefiniteIntegral,
     IndefiniteIntegral,
     AlternateForm,
     ExpandedForm,
