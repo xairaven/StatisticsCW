@@ -237,6 +237,11 @@ internal class Calculations
         result = _solver.OperandFromResult(_solver.PlainText(query, PodId.Result));
         _results["MxSum"] = result;
         
+        // M(x) Number
+        query = $"N[{_results["MxSum"]}, 10]";
+        result = _solver.OperandFromResult(_solver.PlainText(query, PodId.Result));
+        _results["MxFloat"] = result;
+        
         
         // FINDING D(x)
         
@@ -280,6 +285,11 @@ internal class Calculations
         query = $"{_results["Mx2Sum"]} - {_results["m2Sum"]}";
         result = _solver.OperandFromResult(_solver.PlainText(query, PodId.Result));
         _results["Dx"] = result;
+        
+        // D(x) Number
+        query = $"N[{_results["Dx"]}, 10]";
+        result = _solver.OperandFromResult(_solver.PlainText(query, PodId.Result));
+        _results["DxFloat"] = result;
         
         // G(x)
         query = $"sqrt({_results["Dx"]}) 10 digits";
@@ -586,7 +596,7 @@ internal class Calculations
         
         
         // M(x)
-        latex = $"M(x) = m = {results["MxSum"]}";
+        latex = $"M(x) = m = {results["MxSum"]} = {results["MxFloat"]}";
         images.Add(LaTeXService.RenderToPng(latex));
         
         
@@ -650,7 +660,7 @@ internal class Calculations
         images.Add(LaTeXService.RenderToPng(latex));
         
         // M(x)^2
-        latex = $"M(x)^2 = m^2 = {results["MxSum"]}^2 = {results["m2Sum"]}";
+        latex = $"M(x)^2 = m^2 = ({results["MxSum"]})^2 = {results["m2Sum"]}";
         images.Add(LaTeXService.RenderToPng(latex));
         
         // Formula D(x)
@@ -658,7 +668,7 @@ internal class Calculations
         images.Add(LaTeXService.RenderToPng(latex));
         
         // D(x)
-        latex = @"D(x) = " + results["Dx"];
+        latex = $"D(x) = {results["Dx"]} = {results["DxFloat"]}";
         images.Add(LaTeXService.RenderToPng(latex));
         
         
