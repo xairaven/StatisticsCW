@@ -310,7 +310,7 @@ internal class Calculations
         latex = @"F(x) = \int_{-\infty}^{x}f(x)dx";
         images.Add(LaTeXService.RenderToPng(latex));
         
-        // Formula F(x) title
+        // Number Line Title
         latex = @"\text{Number line on 4 intervals:}";
         images.Add(LaTeXService.RenderToPng(latex));
         
@@ -430,6 +430,48 @@ internal class Calculations
                 + results["Fx3Sum"] + @", & 0 < x \leq  " + _b + @" \\ " 
                 + results["Fx4Sum"] + @", & x >  " + _b 
                 + @"}\right.";
+        images.Add(LaTeXService.RenderToPng(latex));
+        
+        // Intersection with the y-axis Title
+        latex = @"\text{Intersection with the y-axis: }";
+        images.Add(LaTeXService.RenderToPng(latex));
+        
+        // Intersection with the y-axis, second integral
+        query = $"{results["Fx2Sum"]}, where x = 0";
+        images.Add(BitmapService.ByGenboxImage(_solver.Image(query)));
+        images.Add(BitmapService.ByGenboxImage(_solver.Image(query, PodId.Result)));
+        
+        // Intersection with the y-axis third integral
+        query = $"{results["Fx3Sum"]}, where x = 0";
+        images.Add(BitmapService.ByGenboxImage(_solver.Image(query)));
+        images.Add(BitmapService.ByGenboxImage(_solver.Image(query, PodId.Result)));
+        
+        // Graphic :(
+        latex = @"\text{Plot. Unfortunately, you have to draw it yourself :(}";
+        images.Add(LaTeXService.RenderToPng(latex));
+        
+        
+        
+        // M(X) TITLE
+        text = "Find M(x):";
+        images.Add(BitmapService.ByText(text, 24, FontStyle.Underline));
+        
+        // Formula M(x) title
+        latex = @"\text{Formula:}";
+        images.Add(LaTeXService.RenderToPng(latex));
+
+        // Formula M(x)
+        latex = @"M(x) = \int_{-\infty}^{\infty}xf(x)dx \Rightarrow";
+        images.Add(LaTeXService.RenderToPng(latex));
+        
+        // Formula M(x) extended
+        latex = @"\star \int_{-\infty}^{" + _a + @"}" + results["Line1"] + @"xdx + \int_{" + _a +
+                @"}^{0}x(" + results["Line2"] + @")dx + \int_{0}^{" + _b + @"}x(" + results["Line3"] + @")dx + \int_{" + _b +
+                @"}^{\infty}" + results["Line4"] + @"xdx = ... ";
+        images.Add(LaTeXService.RenderToPng(latex));
+        
+        // Integrals Title
+        latex = @"\text{Each integral separately:}";
         images.Add(LaTeXService.RenderToPng(latex));
         
         return images;
