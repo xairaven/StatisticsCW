@@ -29,7 +29,7 @@ public class LoggingService
     
     private string Time(TimeSpan ts)
     {
-        return string.Format("({0:00}.{1:00}.{2:00} m.)",
-            ts.Minutes, ts.Seconds, ts.Milliseconds / 10);
+        return string.Format("({0:00}.{1:00} m.)", 
+            ts.Minutes, ts.Seconds);
     } 
 }
