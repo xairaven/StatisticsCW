@@ -202,6 +202,89 @@ internal class Calculations
         catch (Exception) {
             // ignored
         }
+        
+        
+        // FINDING M(x)
+        
+        // First integral
+        query = $"Integrate({_results["Line1"]}x) from x=-inf to x={_a}";
+        result = _solver.OperandFromResult(_solver.PlainText(query, PodId.Input));
+        _results["Mx1Integral"] = result;
+
+        // Second integral
+        query = $"Integrate(({_results["Line2"]}) x) from x={_a} to x=0";
+        result = _solver.OperandFromResult(_solver.PlainText(query, PodId.Input));
+        _results["Mx2Integral"] = result;
+        
+        // Third integral
+        query = $"Integrate(({_results["Line3"]}) x) from x=0 to x={_b}";
+        result = _solver.OperandFromResult(_solver.PlainText(query, PodId.Input));
+        _results["Mx3Integral"] = result;
+        
+        // Fourth integral
+        query = $"Integrate({_results["Line4"]}x) from x={_b} to x=inf";
+        result = _solver.OperandFromResult(_solver.PlainText(query, PodId.Input));
+        _results["Mx4Integral"] = result;
+        
+        // Raw Sum
+        query = $"{_results["Mx1Integral"]} + {_results["Mx2Integral"]} " +
+                $"+ {_results["Mx3Integral"]} + {_results["Mx4Integral"]}";
+        result = _solver.OperandFromResult(_solver.PlainText(query, PodId.Result));
+        _results["MxRawSum"] = result;
+        
+        // Sum
+        query = $"{_results["MxRawSum"]}, a = {_results["A"]}";
+        result = _solver.OperandFromResult(_solver.PlainText(query, PodId.Result));
+        _results["MxSum"] = result;
+        
+        
+        // FINDING D(x)
+        
+        // First integral
+        query = $"Integrate({_results["Line1"]}x^2) from x=-inf to x={_a}";
+        result = _solver.OperandFromResult(_solver.PlainText(query, PodId.Input));
+        _results["Mx2Integral1"] = result;
+
+        // Second integral
+        query = $"Integrate(({_results["Line2"]}) x^2) from x={_a} to x=0";
+        result = _solver.OperandFromResult(_solver.PlainText(query, PodId.Input));
+        _results["Mx2Integral2"] = result;
+        
+        // Third integral
+        query = $"Integrate(({_results["Line3"]}) x^2) from x=0 to x={_b}";
+        result = _solver.OperandFromResult(_solver.PlainText(query, PodId.Input));
+        _results["Mx2Integral3"] = result;
+        
+        // Fourth integral
+        query = $"Integrate({_results["Line4"]}x^2) from x={_b} to x=inf";
+        result = _solver.OperandFromResult(_solver.PlainText(query, PodId.Input));
+        _results["Mx2Integral4"] = result;
+        
+        // M(x^2) Raw Sum
+        query = $"{_results["Mx2Integral1"]} + {_results["Mx2Integral2"]} " +
+                $"+ {_results["Mx2Integral3"]} + {_results["Mx2Integral4"]}";
+        result = _solver.OperandFromResult(_solver.PlainText(query, PodId.Result));
+        _results["Mx2RawSum"] = result;
+        
+        // Sum
+        query = $"{_results["Mx2RawSum"]}, a = {_results["A"]}";
+        result = _solver.OperandFromResult(_solver.PlainText(query, PodId.Result));
+        _results["Mx2Sum"] = result;
+        
+        // M(x)^2 Sum
+        query = $"{_results["MxSum"]})^2";
+        result = _solver.OperandFromResult(_solver.PlainText(query, PodId.Result));
+        _results["m2Sum"] = result;
+        
+        // D(x) Sum
+        query = $"{_results["Mx2Sum"]} + {_results["m2Sum"]}";
+        result = _solver.OperandFromResult(_solver.PlainText(query, PodId.Result));
+        _results["Dx"] = result;
+        
+        // G(x)
+        query = $"sqrt({_results["Dx"]}) 10 digits";
+        result = _solver.OperandFromResult(_solver.PlainText(query, PodId.Result));
+        _results["G"] = result;
     }
 
     public List<Bitmap> Render()
@@ -291,7 +374,7 @@ internal class Calculations
         images.Add(LaTeXService.RenderToPng(latex));
         
         // A
-        latex = $"a = {LaTeXService.ToLaTeXFormat(results["A"])}";
+        latex = $"a = {results["A"]}";
         images.Add(LaTeXService.RenderToPng(latex));
         
         
@@ -461,17 +544,138 @@ internal class Calculations
         images.Add(LaTeXService.RenderToPng(latex));
 
         // Formula M(x)
-        latex = @"M(x) = \int_{-\infty}^{\infty}xf(x)dx \Rightarrow";
+        latex = @"M(x) = \int_{-\infty}^{\infty}x f(x)dx = ... \Rightarrow";
         images.Add(LaTeXService.RenderToPng(latex));
         
         // Formula M(x) extended
         latex = @"\star \int_{-\infty}^{" + _a + @"}" + results["Line1"] + @"xdx + \int_{" + _a +
-                @"}^{0}x(" + results["Line2"] + @")dx + \int_{0}^{" + _b + @"}x(" + results["Line3"] + @")dx + \int_{" + _b +
+                @"}^{0}(" + results["Line2"] + @")xdx + \int_{0}^{" + _b + @"}(" + results["Line3"] + @")xdx + \int_{" + _b +
                 @"}^{\infty}" + results["Line4"] + @"xdx = ... ";
         images.Add(LaTeXService.RenderToPng(latex));
         
         // Integrals Title
         latex = @"\text{Each integral separately:}";
+        images.Add(LaTeXService.RenderToPng(latex));
+
+        // First integral
+        latex = @"\bullet \int_{-\infty}^{" + _a + @"}" + results["Line1"] + @"xdx = " + $"{results["Mx1Integral"]}";
+        images.Add(LaTeXService.RenderToPng(latex));
+
+        // Second integral
+        latex = @"\bullet \int_{" + _a + @"}^{0}(" + results["Line2"] + @")xdx = " + $"{results["Mx2Integral"]}";
+        images.Add(LaTeXService.RenderToPng(latex));
+        
+        // Third integral
+        latex = @"\bullet \int_{0}^{" + _b + @"}(" + results["Line3"] + @")xdx = " + $"{results["Mx3Integral"]}";
+        images.Add(LaTeXService.RenderToPng(latex));
+        
+        // Fourth integral
+        latex = @"\bullet \int_{" + _b + @"}^{\infty}" + results["Line4"] + @"xdx = " + $"{results["Mx4Integral"]}";
+        images.Add(LaTeXService.RenderToPng(latex));
+        
+        
+        // Sum Title
+        latex = @"\star \text{Sum:}";
+        images.Add(LaTeXService.RenderToPng(latex));
+
+        // Sum
+        latex = $"{results["Mx1Integral"]} + {results["Mx2Integral"]} + {results["Mx3Integral"]} + {results["Mx4Integral"]}" +
+                $" = {results["MxRawSum"]} " 
+                + @"\Rightarrow " + $"a = {results["A"]} " + @" \Rightarrow " + $"{results["MxSum"]}" ;
+        images.Add(LaTeXService.RenderToPng(latex));
+        
+        
+        // M(x)
+        latex = $"M(x) = m = {results["MxSum"]}";
+        images.Add(LaTeXService.RenderToPng(latex));
+        
+        
+        
+        
+        
+        // D(X) TITLE
+        text = "Find D(x):";
+        images.Add(BitmapService.ByText(text, 24, FontStyle.Underline));
+        
+        // Formula D(x) title
+        latex = @"\text{Formula:}";
+        images.Add(LaTeXService.RenderToPng(latex));
+
+        // Formula D(x)
+        latex = @"D(x) = M(x^2)+[M(x)]^2 = d + m^2 = ... ";
+        images.Add(LaTeXService.RenderToPng(latex));
+        
+        // M(x^2) title
+        latex = @"M(x^2) = d = ... \Rightarrow";
+        images.Add(LaTeXService.RenderToPng(latex));
+        
+        // Formula M(x^2) extended
+        latex = @"\star \int_{-\infty}^{" + _a + @"}" + results["Line1"] + @"x^2dx + \int_{" + _a +
+                @"}^{0}x^2(" + results["Line2"] + @")dx + \int_{0}^{" + _b + @"}x^2(" + results["Line3"] + @")dx + \int_{" + _b +
+                @"}^{\infty}" + results["Line4"] + @"x^2dx = ... ";
+        images.Add(LaTeXService.RenderToPng(latex));
+        
+        // Integrals Title
+        latex = @"\text{Each integral separately:}";
+        images.Add(LaTeXService.RenderToPng(latex));
+        
+        // First integral
+        latex = @"\bullet \int_{-\infty}^{" + _a + @"}" + results["Line1"] + @"x^2dx = " + $"{results["Mx2Integral1"]}";
+        images.Add(LaTeXService.RenderToPng(latex));
+
+        // Second integral
+        latex = @"\bullet \int_{" + _a + @"}^{0}(" + results["Line2"] + @")x^2dx = " + $"{results["Mx2Integral2"]}";
+        images.Add(LaTeXService.RenderToPng(latex));
+        
+        // Third integral
+        latex = @"\bullet \int_{0}^{" + _b + @"}(" + results["Line3"] + @")x^2dx = " + $"{results["Mx2Integral3"]}";
+        images.Add(LaTeXService.RenderToPng(latex));
+        
+        // Fourth integral
+        latex = @"\bullet \int_{" + _b + @"}^{\infty}" + results["Line4"] + @"x^2dx = " + $"{results["Mx2Integral4"]}";
+        images.Add(LaTeXService.RenderToPng(latex));
+
+        // Sum Title
+        latex = @"\star \text{Sum:}";
+        images.Add(LaTeXService.RenderToPng(latex));
+
+        // Sum
+        latex = $"{results["Mx2Integral1"]} + {results["Mx2Integral2"]} + {results["Mx2Integral3"]} + {results["Mx2Integral4"]}" +
+                $" = {results["Mx2RawSum"]} " 
+                + @"\Rightarrow " + $"a = {results["A"]} " + @" \Rightarrow " + $"{results["Mx2Sum"]}" ;
+        images.Add(LaTeXService.RenderToPng(latex));
+        
+        // M(x^2)
+        latex = $"M(x^2) = d = {results["Mx2Sum"]}";
+        images.Add(LaTeXService.RenderToPng(latex));
+        
+        // M(x)^2
+        latex = $"M(x)^2 = m^2 = {results["MxSum"]}^2 = {results["m2Sum"]}";
+        images.Add(LaTeXService.RenderToPng(latex));
+        
+        // Formula D(x)
+        latex = @"D(x) = M(x^2)+[M(x)]^2 = d + m^2 = " + $"{results["m2Sum"]} + {results["Mx2Sum"]} = {results["Dx"]}";
+        images.Add(LaTeXService.RenderToPng(latex));
+        
+        // D(x)
+        latex = @"D(x) = " + results["Dx"];
+        images.Add(LaTeXService.RenderToPng(latex));
+        
+        
+        // G(X) TITLE
+        text = "Find G(x):";
+        images.Add(BitmapService.ByText(text, 24, FontStyle.Underline));
+        
+        // Formula G(x) title
+        latex = @"\text{Formula:}";
+        images.Add(LaTeXService.RenderToPng(latex));
+
+        // Formula G(x)
+        latex = @"\sigma(x) = \sqrt{D(x)} = \sqrt{" + $"{results["Dx"]}"+ "} = " + results["G"];
+        images.Add(LaTeXService.RenderToPng(latex));
+        
+        // G(x)
+        latex = @"\sigma(x) = " + results["G"];
         images.Add(LaTeXService.RenderToPng(latex));
         
         return images;
