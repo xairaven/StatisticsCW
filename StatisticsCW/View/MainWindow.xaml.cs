@@ -85,6 +85,7 @@ public partial class MainWindow : Window
         catch (Exception exception)
         {
             MessageBoxCustom.Error(exception.Message);
+            Dispatcher.Invoke(loadingWindow.Close);
         }
     }
 
