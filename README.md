@@ -14,7 +14,7 @@ Not for commercial use.
 <h2>Tech stack:</h2>
 
 - **C#**
-- **.NET 7**
+- **.NET 8**
 - PDF Processing: **[QuestPDF](https://www.nuget.org/packages/QuestPDF)**
 - Calculations: **[Wolfram Alpha API](https://products.wolframalpha.com/api/)**
 - Wolfram Alpha API Library: **[Genbox.WolframAlpha](https://github.com/Genbox/WolframAlpha)**
@@ -45,7 +45,7 @@ After that, you need to save it in the appropriate field in the settings.
 
 <h3>For development</h3>
 
-- **.NET 7 SDK**
+- **.NET 8 SDK**
 
 <h2>Contributions</h2>
 
