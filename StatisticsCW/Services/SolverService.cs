@@ -35,9 +35,10 @@ public class SolverService
         return response.Pods[0].SubPods[0].Image;
     }
     
-    public string PlainText(string query, PodId podId = PodId.Input, string title = "Result")
+    public string PlainText(string query, PodId podId = PodId.Input)
     {
         var response = _client.FullResultAsync(query).Result;
+        var title = PodTitle.Get(podId);
         
         foreach (var pod in response.Pods)
         {
