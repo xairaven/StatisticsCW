@@ -2,11 +2,12 @@
 
     <PropertyGroup>
         <OutputType>WinExe</OutputType>
-        <TargetFramework>net7.0-windows</TargetFramework>
+        <TargetFramework>net8.0-windows</TargetFramework>
         <Nullable>enable</Nullable>
         <UseWPF>true</UseWPF>
         <RuntimeIdentifier>win-x64</RuntimeIdentifier>
         <ApplicationIcon>Resources\App\icon.ico</ApplicationIcon>
+        <SelfContained>true</SelfContained>
     </PropertyGroup>
 
     <ItemGroup>

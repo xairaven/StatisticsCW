@@ -14,12 +14,12 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       
       - name: Install .NET Core
-        uses: actions/setup-dotnet@v3
+        uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: 7.0.x
+          dotnet-version: 8.x
 
       - name: .NET Restore
         run: dotnet restore ${{ env.PROJECT_PATH }}
@@ -31,7 +31,7 @@ jobs:
         run: dotnet publish ${{ env.PROJECT_PATH }} -c Release --self-contained -r win-x64 -p:PublishSingleFile=true --no-build
         
       - name: Create release ZIP archive
-        run: tar.exe acvf Release.zip -C .\StatisticsCW\bin\Release\net7.0-windows\win-x64\publish\ --strip-components=1 .      
+        run: tar.exe acvf Release.zip -C .\StatisticsCW\bin\Release\net8.0-windows\win-x64\publish\ --strip-components=1 .      
 
       - name: Create release 
         uses: "marvinpinto/action-automatic-releases@latest"
