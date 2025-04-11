@@ -1,13 +1,16 @@
-﻿using System.Drawing;
+﻿using System;
+using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Text;
 using System.Net.Http;
+using System.Threading.Tasks;
 using GenboxImage = Genbox.WolframAlpha.Objects.Image;
 
 namespace StatisticsCW.Services;
 
 public static class BitmapService
 {
+    [Obsolete("Use ByGenboxImageAsync instead")]
     public static Bitmap ByGenboxImage(GenboxImage image)
     {
         using var client = new HttpClient();
@@ -19,6 +22,22 @@ public static class BitmapService
 
         var stream = response.Content.ReadAsStream();
         
+        var bitmap = new Bitmap(stream);
+
+        return bitmap;
+    }
+    
+    public static async Task<Bitmap> ByGenboxImageAsync(GenboxImage image)
+    {
+        using var client = new HttpClient();
+    
+        var url = image.Src;
+        var response = await client.GetAsync(url);
+
+        response.EnsureSuccessStatusCode();
+
+        var stream = await response.Content.ReadAsStreamAsync();
+    
         var bitmap = new Bitmap(stream);
 
         return bitmap;

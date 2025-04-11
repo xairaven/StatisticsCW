@@ -159,7 +159,7 @@ internal class Calculations
         );
     }
 
-    public List<Bitmap> Render()
+    public async Task<List<Bitmap>> Render()
     {
         var images = new List<Bitmap>();
 
@@ -181,13 +181,25 @@ internal class Calculations
 
         // Line 2 title and result
         query = $"Line equation, points ({_a},0), (0,a)";
-        images.Add(BitmapService.ByGenboxImage(_solver.Image(query)));
-        images.Add(BitmapService.ByGenboxImage(_solver.Image(query, PodId.Result)));
+        var taskResultImages = await Task.WhenAll(_solver.ImageAsync(query),
+            _solver.ImageAsync(query, PodId.Result));
+        var taskResultBitmaps = await Task.WhenAll(
+            BitmapService.ByGenboxImageAsync(taskResultImages[0]),
+            BitmapService.ByGenboxImageAsync(taskResultImages[1])
+        );
+        images.Add(taskResultBitmaps[0]);
+        images.Add(taskResultBitmaps[1]);
 
         // Line 3 title and result
         query = $"Line equation, points (0, a), ({_b}, 0)";
-        images.Add(BitmapService.ByGenboxImage(_solver.Image(query)));
-        images.Add(BitmapService.ByGenboxImage(_solver.Image(query, PodId.Result)));
+        taskResultImages = await Task.WhenAll(_solver.ImageAsync(query),
+            _solver.ImageAsync(query, PodId.Result));
+        taskResultBitmaps = await Task.WhenAll(
+            BitmapService.ByGenboxImageAsync(taskResultImages[0]),
+            BitmapService.ByGenboxImageAsync(taskResultImages[1])
+        );
+        images.Add(taskResultBitmaps[0]);
+        images.Add(taskResultBitmaps[1]);
 
         // f(x) system (lines)
         latex = @"f(x) = \left\{\matrix{"
@@ -279,8 +291,9 @@ internal class Calculations
 
         // Number Line
         query = $"Line {_a}, 0, {_b}";
-        images.Add(BitmapService.ByGenboxImage(_solver.Image(query, PodId.NumberLine)));
-
+        var taskResultImage = await _solver.ImageAsync(query, PodId.NumberLine);
+        var taskResultBitmap = await BitmapService.ByGenboxImageAsync(taskResultImage);
+        images.Add(taskResultBitmap);
 
         // First Interval
         latex = @"1) -\infty; " + _a;
@@ -382,13 +395,25 @@ internal class Calculations
 
         // Intersection with the y-axis, second integral
         query = $"{results["Fx2Sum"]}, where x = 0";
-        images.Add(BitmapService.ByGenboxImage(_solver.Image(query)));
-        images.Add(BitmapService.ByGenboxImage(_solver.Image(query, PodId.Result)));
+        taskResultImages = await Task.WhenAll(_solver.ImageAsync(query),
+            _solver.ImageAsync(query, PodId.Result));
+        taskResultBitmaps = await Task.WhenAll(
+            BitmapService.ByGenboxImageAsync(taskResultImages[0]),
+            BitmapService.ByGenboxImageAsync(taskResultImages[1])
+        );
+        images.Add(taskResultBitmaps[0]);
+        images.Add(taskResultBitmaps[1]);
 
         // Intersection with the y-axis third integral
         query = $"{results["Fx3Sum"]}, where x = 0";
-        images.Add(BitmapService.ByGenboxImage(_solver.Image(query)));
-        images.Add(BitmapService.ByGenboxImage(_solver.Image(query, PodId.Result)));
+        taskResultImages = await Task.WhenAll(_solver.ImageAsync(query),
+            _solver.ImageAsync(query, PodId.Result));
+        taskResultBitmaps = await Task.WhenAll(
+            BitmapService.ByGenboxImageAsync(taskResultImages[0]),
+            BitmapService.ByGenboxImageAsync(taskResultImages[1])
+        );
+        images.Add(taskResultBitmaps[0]);
+        images.Add(taskResultBitmaps[1]);
 
         // Graphic :(
         latex = @"\text{Plot. Unfortunately, you have to draw it yourself :(}";

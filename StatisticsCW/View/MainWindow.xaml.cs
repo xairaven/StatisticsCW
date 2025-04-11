@@ -64,7 +64,7 @@ public partial class MainWindow : Window
             
             logger.LogStatus(50, "Rendering pictures...", stopWatch.Elapsed);
 
-            var images = calculator.Render();
+            var images = Task.Run(() => calculator.Render()).GetAwaiter().GetResult();
             
             logger.LogStatus(80, "Generating PDF...", stopWatch.Elapsed);
 
