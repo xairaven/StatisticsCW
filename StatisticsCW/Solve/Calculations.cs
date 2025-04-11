@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using System.Threading.Tasks;
 using StatisticsCW.Enum;
 using StatisticsCW.Services;
 
@@ -14,138 +16,147 @@ internal class Calculations
     private int _a;
     private int _b;
 
-    private readonly Dictionary<string, string> _results;
+    private readonly ConcurrentDictionary<string, string> _results;
 
     public Calculations(string appId)
     {
         _solver = new SolverService(appId);
 
         // Initializing fields
-        _results = new Dictionary<string, string>();
+        _results = new ConcurrentDictionary<string, string>();
     }
 
-    public void Solve(int a, int b)
+    public async Task Solve(int a, int b)
     {
         _a = a;
         _b = b;
 
         // First lines
         _results["Line1"] = "0";
-        SaveResult("Line2", $"Line equation, points ({_a},0), (0,a)", PodId.Result);
-        SaveResult("Line3", $"Line equation, points (0, a), ({_b}, 0)", PodId.Result);
+        await Task.WhenAll(
+            SaveResult("Line2", $"Line equation, points ({_a},0), (0,a)", PodId.Result),
+            SaveResult("Line3", $"Line equation, points (0, a), ({_b}, 0)", PodId.Result)
+        );
         _results["Line4"] = "0";
 
         // FINDING A
-
-        // First integral
-        SaveResult("A1Integral", $"Integrate({_results["Line1"]}) from x=-inf to x={_a}", PodId.Result);
-        // Second integral
-        SaveResult("A2Integral", $"Integrate({_results["Line2"]}) from x={_a} to x=0", PodId.Result);
-        // Third integral
-        SaveResult("A3Integral", $"Integrate({_results["Line3"]}) from x=0 to x={_b}", PodId.Result);
-        // Fourth integral
-        SaveResult("A4Integral", $"Integrate({_results["Line4"]}) from x={_b} to x=inf", PodId.Result);
+        await Task.WhenAll(
+            // First integral
+            SaveResult("A1Integral", $"Integrate({_results["Line1"]}) from x=-inf to x={_a}", PodId.Result),
+            // Second integral
+            SaveResult("A2Integral", $"Integrate({_results["Line2"]}) from x={_a} to x=0", PodId.Result),
+            // Third integral
+            SaveResult("A3Integral", $"Integrate({_results["Line3"]}) from x=0 to x={_b}", PodId.Result),
+            // Fourth integral
+            SaveResult("A4Integral", $"Integrate({_results["Line4"]}) from x={_b} to x=inf", PodId.Result)
+        );
 
         // Sum
-        SaveResult("ASum", $"{_results["A1Integral"]} + {_results["A2Integral"]} " +
-                           $"+ {_results["A3Integral"]} + {_results["A4Integral"]}", PodId.Result);
+        await SaveResult("ASum", $"{_results["A1Integral"]} + {_results["A2Integral"]} " +
+                                 $"+ {_results["A3Integral"]} + {_results["A4Integral"]}", PodId.Result);
 
         // A
-        SaveResult("A", $"Solve {_results["ASum"]} = 1", PodId.Result);
+        await SaveResult("A", $"Solve {_results["ASum"]} = 1", PodId.Result);
 
         // F(X)
         // First interval
-        SaveResult("Fx1Integral", $"Integrate({_results["Line1"]}) from x=-inf to x=x", PodId.Result);
+        await SaveResult("Fx1Integral", $"Integrate({_results["Line1"]}) from x=-inf to x=x", PodId.Result);
         _results["Fx1Sum"] = _results["Fx1Integral"];
 
         // Second interval
         // x integral
-        SaveResult("Fx2Integral", $"Integrate({_results["Line2"]}) from x={a} to x=x", PodId.Result);
-        TrySaveResult("Fx2Integral", $"{_results["Fx2Integral"]}", PodId.ExpandedForm);
+        await SaveResult("Fx2Integral", $"Integrate({_results["Line2"]}) from x={a} to x=x", PodId.Result);
+        await TrySaveResult("Fx2Integral", $"{_results["Fx2Integral"]}", PodId.ExpandedForm);
 
         // Raw sum
-        SaveResult("Fx2RawSum", $"{_results["A1Integral"]} + {_results["Fx2Integral"]}", PodId.Result);
+        await SaveResult("Fx2RawSum", $"{_results["A1Integral"]} + {_results["Fx2Integral"]}", PodId.Result);
 
         // Sum
-        SaveResult("Fx2Sum", $"{_results["Fx2RawSum"]}, a = {_results["A"]}", PodId.Result);
-        TrySaveResult("Fx2Sum", $"{_results["Fx2Sum"]}", PodId.ExpandedForm);
+        await SaveResult("Fx2Sum", $"{_results["Fx2RawSum"]}, a = {_results["A"]}", PodId.Result);
+        await TrySaveResult("Fx2Sum", $"{_results["Fx2Sum"]}", PodId.ExpandedForm);
 
         // Third interval
         // x integral
-        SaveResult("Fx3Integral", $"Integrate({_results["Line3"]}) from x=0 to x=x", PodId.Result);
-        TrySaveResult("Fx3Integral", $"{_results["Fx3Integral"]}", PodId.ExpandedForm);
+        await SaveResult("Fx3Integral", $"Integrate({_results["Line3"]}) from x=0 to x=x", PodId.Result);
+        await TrySaveResult("Fx3Integral", $"{_results["Fx3Integral"]}", PodId.ExpandedForm);
 
         // Raw sum
-        SaveResult("Fx3RawSum", $"{_results["A1Integral"]} + {_results["A2Integral"]} + {_results["Fx3Integral"]}",
+        await SaveResult("Fx3RawSum",
+            $"{_results["A1Integral"]} + {_results["A2Integral"]} + {_results["Fx3Integral"]}",
             PodId.Result);
 
         // Sum
-        SaveResult("Fx3Sum", $"{_results["Fx3RawSum"]}, a = {_results["A"]}", PodId.Result);
-        TrySaveResult("Fx3Sum", $"{_results["Fx3Sum"]}", PodId.ExpandedForm);
+        await SaveResult("Fx3Sum", $"{_results["Fx3RawSum"]}, a = {_results["A"]}", PodId.Result);
+        await TrySaveResult("Fx3Sum", $"{_results["Fx3Sum"]}", PodId.ExpandedForm);
 
         // Fourth interval
         // x integral
-        SaveResult("Fx4Integral", $"Integrate({_results["Line4"]}) from x={_b} to x=x", PodId.Result);
-        TrySaveResult("Fx4Integral", $"{_results["Fx4Integral"]}", PodId.ExpandedForm);
+        await SaveResult("Fx4Integral", $"Integrate({_results["Line4"]}) from x={_b} to x=x", PodId.Result);
+        await TrySaveResult("Fx4Integral", $"{_results["Fx4Integral"]}", PodId.ExpandedForm);
 
         // Raw sum
-        SaveResult("Fx4RawSum", $"{_results["A1Integral"]} + {_results["A2Integral"]} " +
-                                $"+ {_results["A3Integral"]} + {_results["Fx4Integral"]}", PodId.Result);
+        await SaveResult("Fx4RawSum", $"{_results["A1Integral"]} + {_results["A2Integral"]} " +
+                                      $"+ {_results["A3Integral"]} + {_results["Fx4Integral"]}", PodId.Result);
 
         // Sum
-        SaveResult("Fx4Sum", $"{_results["Fx4RawSum"]}, a = {_results["A"]}", PodId.Result);
-        TrySaveResult("Fx4Sum", $"{_results["Fx4Sum"]}", PodId.ExpandedForm);
+        await SaveResult("Fx4Sum", $"{_results["Fx4RawSum"]}, a = {_results["A"]}", PodId.Result);
+        await TrySaveResult("Fx4Sum", $"{_results["Fx4Sum"]}", PodId.ExpandedForm);
 
         // FINDING M(x)
 
-        // First integral
-        SaveResult("Mx1Integral", $"Integrate({_results["Line1"]}x) from x=-inf to x={_a}", PodId.Input);
-        // Second integral
-        SaveResult("Mx2Integral", $"Integrate(({_results["Line2"]}) x) from x={_a} to x=0", PodId.Input);
-        // Third integral
-        SaveResult("Mx3Integral", $"Integrate(({_results["Line3"]}) x) from x=0 to x={_b}", PodId.Input);
-        // Fourth integral
-        SaveResult("Mx4Integral", $"Integrate({_results["Line4"]}x) from x={_b} to x=inf", PodId.Input);
+        await Task.WhenAll(
+            // First integral
+            SaveResult("Mx1Integral", $"Integrate({_results["Line1"]}x) from x=-inf to x={_a}", PodId.Input),
+            // Second integral
+            SaveResult("Mx2Integral", $"Integrate(({_results["Line2"]}) x) from x={_a} to x=0", PodId.Input),
+            // Third integral
+            SaveResult("Mx3Integral", $"Integrate(({_results["Line3"]}) x) from x=0 to x={_b}", PodId.Input),
+            // Fourth integral
+            SaveResult("Mx4Integral", $"Integrate({_results["Line4"]}x) from x={_b} to x=inf", PodId.Input)
+        );
 
         // Raw Sum
-        SaveResult("MxRawSum", $"{_results["Mx1Integral"]} + {_results["Mx2Integral"]} " +
-                               $"+ {_results["Mx3Integral"]} + {_results["Mx4Integral"]}", PodId.Result);
+        await SaveResult("MxRawSum", $"{_results["Mx1Integral"]} + {_results["Mx2Integral"]} " +
+                                     $"+ {_results["Mx3Integral"]} + {_results["Mx4Integral"]}", PodId.Result);
 
         // Sum
-        SaveResult("MxSum", $"{_results["MxRawSum"]}, a = {_results["A"]}", PodId.Result);
+        await SaveResult("MxSum", $"{_results["MxRawSum"]}, a = {_results["A"]}", PodId.Result);
 
         // M(x) Number
-        SaveResult("MxFloat", $"N[{_results["MxSum"]}, 10]", PodId.Result);
+        await SaveResult("MxFloat", $"N[{_results["MxSum"]}, 10]", PodId.Result);
 
         // FINDING D(x)
-
-        // First integral
-        SaveResult("Mx2Integral1", $"Integrate({_results["Line1"]}x^2) from x=-inf to x={_a}", PodId.Input);
-        // Second integral
-        SaveResult("Mx2Integral2", $"Integrate(({_results["Line2"]}) x^2) from x={_a} to x=0", PodId.Input);
-        // Third integral
-        SaveResult("Mx2Integral3", $"Integrate(({_results["Line3"]}) x^2) from x=0 to x={_b}", PodId.Input);
-        // Fourth integral
-        SaveResult("Mx2Integral4", $"Integrate({_results["Line4"]}x^2) from x={_b} to x=inf", PodId.Input);
+        await Task.WhenAll(
+            // First integral
+            SaveResult("Mx2Integral1", $"Integrate({_results["Line1"]}x^2) from x=-inf to x={_a}", PodId.Input),
+            // Second integral
+            SaveResult("Mx2Integral2", $"Integrate(({_results["Line2"]}) x^2) from x={_a} to x=0", PodId.Input),
+            // Third integral
+            SaveResult("Mx2Integral3", $"Integrate(({_results["Line3"]}) x^2) from x=0 to x={_b}", PodId.Input),
+            // Fourth integral
+            SaveResult("Mx2Integral4", $"Integrate({_results["Line4"]}x^2) from x={_b} to x=inf", PodId.Input)
+        );
 
         // M(x^2) Raw Sum
-        SaveResult("Mx2RawSum", $"{_results["Mx2Integral1"]} + {_results["Mx2Integral2"]} " +
-                                $"+ {_results["Mx2Integral3"]} + {_results["Mx2Integral4"]}", PodId.Result);
+        await SaveResult("Mx2RawSum", $"{_results["Mx2Integral1"]} + {_results["Mx2Integral2"]} " +
+                                      $"+ {_results["Mx2Integral3"]} + {_results["Mx2Integral4"]}", PodId.Result);
 
         // Sum
-        SaveResult("Mx2Sum", $"{_results["Mx2RawSum"]}, a = {_results["A"]}", PodId.Result);
+        await SaveResult("Mx2Sum", $"{_results["Mx2RawSum"]}, a = {_results["A"]}", PodId.Result);
 
         // M(x)^2 Sum
-        SaveResult("m2Sum", $"({_results["MxSum"]})^2", PodId.Result);
+        await SaveResult("m2Sum", $"({_results["MxSum"]})^2", PodId.Result);
 
         // D(x) Sum
-        SaveResult("Dx", $"{_results["Mx2Sum"]} - {_results["m2Sum"]}", PodId.Result);
+        await SaveResult("Dx", $"{_results["Mx2Sum"]} - {_results["m2Sum"]}", PodId.Result);
 
-        // D(x) Number
-        SaveResult("DxFloat", $"N[{_results["Dx"]}, 10]", PodId.Result);
+        await Task.WhenAll(
+            // D(x) Number
+            SaveResult("DxFloat", $"N[{_results["Dx"]}, 10]", PodId.Result),
 
-        // G(x)
-        SaveResult("G", $"sqrt({_results["Dx"]}) 10 digits", PodId.Result);
+            // G(x)
+            SaveResult("G", $"sqrt({_results["Dx"]}) 10 digits", PodId.Result)
+        );
     }
 
     public List<Bitmap> Render()
@@ -531,21 +542,22 @@ internal class Calculations
         return images;
     }
 
-    private string QuerySolver(string query, PodId podId)
+    private async Task<string> QuerySolver(string query, PodId podId)
     {
-        return _solver.OperandFromResult(_solver.PlainText(query, podId));
+        var result = await _solver.PlainTextAsync(query, podId);
+        return _solver.OperandFromResult(result);
     }
 
-    private void SaveResult(string key, string query, PodId podId)
+    private async Task SaveResult(string key, string query, PodId podId)
     {
-        _results[key] = QuerySolver(query, podId);
+        _results[key] = await QuerySolver(query, podId);
     }
 
-    private void TrySaveResult(string key, string query, PodId podId)
+    private async Task TrySaveResult(string key, string query, PodId podId)
     {
         try
         {
-            SaveResult(key, query, podId);
+            await SaveResult(key, query, podId);
         }
         catch (Exception)
         {

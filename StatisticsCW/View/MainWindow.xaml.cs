@@ -60,7 +60,7 @@ public partial class MainWindow : Window
             
             logger.LogStatus(10, "Solving task...", stopWatch.Elapsed);
 
-            calculator.Solve(numbers.a, numbers.b);
+            Task.Run(() => calculator.Solve(numbers.a, numbers.b)).GetAwaiter().GetResult();
             
             logger.LogStatus(50, "Rendering pictures...", stopWatch.Elapsed);
 
