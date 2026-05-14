@@ -8,6 +8,12 @@
 ![](https://img.shields.io/github/license/xairaven/StatisticsCW?style=plastic)
 ![](https://img.shields.io/github/issues/xairaven/StatisticsCW?style=plastic)
 
+> [!CAUTION]
+> ⚠️ **ARCHIVED AND DEPRECATED**
+> 
+> This project is no longer maintained and has been archived. A new, fully cross-platform version rewritten in **Rust** is available here: **[xStatisticsCW](https://github.com/xairaven/xstatisticscw)**.
+
+
 **Using this repo you agree not to violate the rules of academic integrity.**
 Not for commercial use.
 
